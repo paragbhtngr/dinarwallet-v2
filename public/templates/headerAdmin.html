@@ -1,0 +1,31 @@
+<header id="top" class="header navbar-fixed-top" ng-controller="headerCtrl">  
+    <div class="container">            
+        <h1 class="logo pull-left">
+            <a class="scrollto" href="#promo">
+                <img id="logo-image" class="logo-image" src="./images/dd.png" alt="Logo">
+              
+            </a>
+        </h1><!--//logo-->              
+        <nav id="main-nav" class="main-nav navbar-right" role="navigation">
+            <div class="navbar-header">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button><!--//nav-toggle-->
+            </div><!--//navbar-header-->            
+            <div class="navbar-collapse collapse" id="navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item {{isHeaderActive('admin')}}"><a id="adminLink" href="http://localhost:4000/#/">Admin Interface</a></li>
+                    <script type="text/javascript">document.getElementById("adminLink").href="https://"+location.hostname+":4000/#/"</script>
+                    <!--<li class="nav-item {{isHeaderActive('client')}}"><a href="#login">Client Portal</a></li>-->
+                </ul><!--//nav-->
+            </div><!--//navabr-collapse-->
+        </nav><!--//main-nav-->  <!--//main-nav-->           
+    </div>
+</header>
+<br/>
+<br/>
+<br/>
+<br/>

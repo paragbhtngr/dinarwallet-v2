@@ -1,0 +1,30 @@
+<div style="background: url('images/bg_login2.jpg') no-repeat;height:100%;color:#e9d482;-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-attachment: fixed;">
+	<br/>
+	<div class="row">
+		<div class="content col-md-4 col-md-offset-4">
+			<div id="form_div" class="form_login"><center>
+				<form>
+					<fieldset class="form-group">
+					    <label for="InputEmail">Email address</label>
+					    <input type="email" ng-model="email" name="email" class="form-control" id="InputEmail" placeholder="Enter email" style="text-transform:none">
+					</fieldset>
+					<fieldset class="form-group">
+						<label for="exampleInputPassword1">Password</label>
+					    <input type="password" ng-model="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password" style="text-transform:none">
+					</fieldset>
+						<button style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;" type="submit" value="default action" ng-click="loginUser()"/>
+					    <button ng-click="forgotPage()" class="btn btn-silver">Forgot Password</button> <button name="login" ng-click="loginUser()" type="submit" class="btn btn-gold">Login</button>
+					    <br>
+					            <span style="color:#cecccc;">{{message}}</span>
+					    
+					    <br><br>
+					    <span style="color:#cecccc">Don't have account?</span> <button name="signup" ng-click="goToRegister()" class="btn btn-silver">Signup</button>
+				</form></center>
+			</div>
+		</div>
+	</div>
+</div>

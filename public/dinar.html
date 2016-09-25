@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+		<script type="text/javascript" src="./js/socket.io.js"></script>
+		<script type="text/javascript" src="./js/qrcode.js"></script>
+		<script type="text/javascript" src="./js/angular-qrcode.js"></script>
+		<script type="text/javascript" src="./js/chart.js"></script>
+    	<script type="text/javascript" src="./js/app.js"></script>
+        <!--Dependancy-->
+        <script type="text/javascript" src="./assets/angular-ui-router.min.js"></script>
+    
+        <!--controllers-->
+        <script type="text/javascript" src="./controller/dinarCtrl.js"></script>
+        <script type="text/javascript" src="./controller/UserCtrls.js"></script>
+        
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<link id="theme-style" rel="stylesheet" href="./css/styles.css">
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+    	<style type="text/css">
+		::-webkit-input-placeholder {
+		   text-transform: initial;
+		}
+		
+		:-moz-placeholder { 
+		   text-transform: initial;
+		}
+		
+		::-moz-placeholder {  
+		   text-transform: initial;
+		}
+		
+		:-ms-input-placeholder { 
+		   text-transform: initial;
+		}
+		
+		
+			.header .main-nav .nav .nav-item {
+		    font-weight: normal;
+		    text-transform: uppercase;
+		    margin-right: 5px;
+		}
+		
+		
+		.navbar-brand {
+			width: 70px;
+			height: 50px;
+			
+			background-size: 50px;
+		}
+		.nav-tabs {
+			display: inline-block;
+			border-bottom: none;
+			padding-top: 15px;
+			font-weight: bold;
+		}
+		.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus, .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+			border: none;
+			border-radius: 0;
+		}
+		.nav-list {
+			border-bottom: 1px solid #eee;
+		}
+		.nav-list > li {
+			padding: 20px 15px 15px;
+			border-left: 1px solid #eee;
+		}
+		.nav-list > li:last-child {
+			border-right: 1px solid #eee;
+		}
+		.nav-list > li > a:hover {
+			text-decoration: none;
+		}
+		.nav-list > li > a > span {
+			display: block;
+			font-weight: bold;
+		
+			text-transform: uppercase;
+		}
+		.mega-dropdown {
+			position: static !important;
+			background:black;
+		}
+		.mega-dropdown-menu {
+			padding: 20px 15px 15px;
+			text-align: center;
+			width: 100%;
+			background: black;
+		    color: white;
+			border-radius:10px;
+		}
+		
+		.btn-gold {
+		    background: #000000;
+		    color: #e9d482;
+		    border: 1px solid #cab354;
+		}
+		 
+		.btn-gold:hover, .btn-gold:focus, .btn-gold:active, .btn-gold.active, .open > .dropdown-toggle.btn-gold {
+		    background: #363410;
+		    color: #e9d482;
+		    border: 1px solid #cab354;
+		}
+		 
+		.btn-gold:active, .btn-gold.active {
+		    background: #007299;
+		    box-shadow: none;
+		}
+		
+		.btn-silver {
+		    background: #000000;
+		    color: #cecccc;
+		    border: 1px solid #908e8e;
+		}
+		 
+		.btn-silver:hover, .btn-silver:focus, .btn-silver:active, .btn-silver.active, .open > .dropdown-toggle.btn-silver {
+		    background: #cecccc;
+		    color: #000000;
+		}
+		 
+		.btn-silver:active, .btn-silver.active {
+		    background: #cecccc;
+		    box-shadow: none;
+		}
+		</style>
+		<link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/44/css/core/tooltip.css">
+	</head>
+  	<body style="background-color:black;" ng-app="dinarApp">
+  		<div ng-include src="'templates/header.html'"></div>
+  		<div ui-view></div>
+	</body>
+</html>

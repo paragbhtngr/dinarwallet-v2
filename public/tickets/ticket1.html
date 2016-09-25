@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script>
+        //var socket = io('http://nodejs.dinardirham.com:8486/');
+        var socket = io('http://127.0.0.1:8484/');
+        var Main = (function(){
+            var quotesList = ['GOLD_100G', 'GOLD_1DINAR', 'GOLD_1G', 'GOLD_1KG', 'SILVER100Oz', 'SILVER1KG'];
+            return {
+                init:function(){
+                    for(var i=0; i<quotesList.length; i++){
+                        socket.emit('quotes.sub', {symbol:quotesList[i]});
+                        var id = document.getElementById('table_content');
+                        var el = document.createElement('tr');
+                            el.innerHTML = "<td>"+quotesList[i]+"</td><td id='"+quotesList[i]+"_bid'></td><td id='"+quotesList[i]+"_ask'></td>";
+                        id.appendChild(el);
+                    }
+
+                    socket.on('a', function(res){
+                    	console.log(res);
+                        document.getElementById(res.data.symbol+'_bid').innerHTML = res.data.bid;
+                        document.getElementById(res.data.symbol+'_ask').innerHTML = res.data.ask;
+                    });
+                }
+            }
+        })();
+        document.addEventListener("DOMContentLoaded", function() {
+            Main.init();
+        });
+    </script>
+    <style>
+        td{
+            border: 1px solid #5d5d5d;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+        <tr>
+
+
+            <th>Symbol</th>
+            <th>bid</th>
+            <th>ask</th>
+        </tr>
+        </thead>
+        <tbody id="table_content">
+
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<div>
+	<div style="background: url('images/client_bg.jpg') no-repeat;background-position: top left;background-attachment: fixed; text-align:right; width:100%;color:#e9d482;text-align:center;">
+		<br/>
+		<span ng-show="KYCAML.KYCAML==='Yes'">
+			<center>
+				<span ng-show="latestHash">Hash for Last Transaction: {{latestHash}}<br/></span>
+				SmartX Address: {{smartXAddress}}<br/>
+				Wallet to use: <select ng-model="btcOrETH">
+					<option ng-repeat="x in BTCETH">{{x}}</option>
+				</select><br/>
+				DinarCoin Balance: {{dinarBalance}} DinarCoin<span ng-show="dinarBalance!=1">s</span><br/>
+				DinarCoin Price: ${{quotes.GOLD_1DINAR.ask}} USD ({{quotes.GOLD_1DINAR.ask/btcInUSD}} BTC/{{quotes.GOLD_1DINAR.ask/ethInUSD}} ETH)<br/>
+				<span ng-show="dinarToBuy">Cost to buy {{dinarToBuy}} DNC would be {{dinarToBuy * quotes.GOLD_1DINAR.ask/btcInUSD}} BTC/{{dinarToBuy * quotes.GOLD_1DINAR.ask/ethInUSD}} ETH<br/></span>
+				<span ng-show="dinarToSell">Sell {{dinarToSell}} DNC for {{dinarToSell * quotes.GOLD_1DINAR.bid/btcInUSD}} BTC/{{dinarToSell * quotes.GOLD_1DINAR.bid/ethInUSD}} ETH</span>
+				<form>
+					<div class="input-group">
+					   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57" name="itemConsumption" min="0" type="number" class="form-control" placeholder="Amount of Dinar to Buy" ng-model="dinarToBuy">
+					   <span class="input-group-btn">
+					        <button class="btn btn-gold" type="button" type="submit" ng-click="buyDinar()" style="width:150px;">Buy</button>
+					   </span>
+					</div>
+				</form>
+				<form>
+					<div class="input-group">
+					   <input type="text" class="form-control" placeholder="To Address" ng-model="toAddress">
+					   <span class="input-group-addon"></span>
+					   <input  min="0" type="number" class="form-control" placeholder="Amount of Dinar to Transfer" ng-model="dinarToTransfer">
+					   <span class="input-group-btn">
+					        <button class="btn btn-gold" type="button" type="submit" ng-click="transferDinar()"  style="width:150px;">Send Dinar</button>
+					   </span>
+					</div>
+				</form>
+				<form>
+					<div class="input-group">
+					   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57" name="itemConsumption" min="0" type="number" class="form-control" placeholder="Amount of Dinar to Sell" ng-model="dinarToSell">
+					   <span class="input-group-btn">
+					        <button class="btn btn-gold" type="button" type="submit" ng-click="sellDinar()" style="width:150px;">Sell</button>
+					   </span>
+					</div>
+				</form>
+				<br/>
+				<span ng-repeat="goldSmartContract in goldSmartContracts">
+					{{goldSmartContract}} GSC Balance: {{goldSmartContractBalances[goldSmartContract]}}<br/>
+					{{goldSmartContract}} GSC Price: ${{quotes[goldSmartContract].ask}} USD ({{quotes[goldSmartContract].ask/btcInUSD}} BTC/{{quotes[goldSmartContract].ask/ethInUSD}} ETH)<br/>
+					<span ng-show="GSCForm[goldSmartContract].amountToBuy">Cost to buy {{GSCForm[goldSmartContract].amountToBuy}} {{goldSmartContract}} GSC would be {{GSCForm[goldSmartContract].amountToBuy * quotes[goldSmartContract].ask/btcInUSD}} BTC/{{GSCForm[goldSmartContract].amountToBuy * quotes[goldSmartContract].ask/ethInUSD}} ETH<br/></span>
+					<span ng-show="GSCForm[goldSmartContract].amountToSell">Sell {{GSCForm[goldSmartContract].amountToSell}} {{goldSmartContract}} GSC for {{GSCForm[goldSmartContract].amountToSell * quotes[goldSmartContract].bid/btcInUSD}} BTC/{{GSCForm[goldSmartContract].amountToSell * quotes[goldSmartContract].bid/ethInUSD}} ETH</span>
+					<form>
+						<div class="input-group">
+						   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57" min="0" name="itemConsumption" type="number" class="form-control" placeholder="Amount of {{goldSmartContract}} GSC to Buy" ng-model="GSCForm[goldSmartContract].amountToBuy">
+						   <span class="input-group-btn">
+						        <button class="btn btn-gold" type="button" type="submit" ng-click="buyGSC(goldSmartContract)" style="width:150px;">Buy</button>
+						   </span>
+						</div>
+					</form>
+					<form>
+						<div class="input-group">
+						   <input type="text" class="form-control" placeholder="To Address" ng-model="GSCForm[goldSmartContract].toAddress">
+						   <span class="input-group-addon"></span>
+						   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57"  min="0" type="number" class="form-control" placeholder="Amount of {{goldSmartContract}} GSC to Transfer" ng-model="GSCForm[goldSmartContract].amountToTransfer">
+						   <span class="input-group-btn">
+						        <button class="btn btn-gold" type="button" type="submit" ng-click="transferGSC(goldSmartContract)"  style="width:150px;">Send GSC</button>
+						   </span>
+						</div>
+					</form>
+					<form>
+					<div class="input-group">
+						   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57" name="itemConsumption" min="0" type="number" class="form-control" placeholder="Amount of {{goldSmartContract}} GSC to Sell" ng-model="GSCForm[goldSmartContract].amountToSell">
+						   <span class="input-group-btn">
+						        <button class="btn btn-gold" type="button" type="submit" ng-click="sellGSC(goldSmartContract)" style="width:150px;">Sell</button>
+						   </span>
+						</div>
+					</form>
+					<br/>
+				</span>
+				Bitcoin Address: {{btcAddress}}<br/>
+				Bitcoin Balance: {{btcBalance}} BTC (${{btcBalance * btcInUSD}} USD)<br/>
+				<span ng-show="pendingBTC">Pending Bitcoins: {{pendingBTC}} BTC</span>
+				<span ng-show="latestBTCHash">Hash for BTC Withdraw: {{latestBTCHash}}<br/></span>
+				<form>
+					<div class="input-group">
+					   <input type="text" class="form-control" placeholder="To Address" ng-model="toBTCAddress">
+					   <span class="input-group-addon"></span>
+					   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)"  min="0" type="number" class="form-control" placeholder="Amount of BTC to Withdraw" ng-model="btcToWithdraw">
+					   <span class="input-group-btn">
+					        <button class="btn btn-gold" type="button" type="submit" ng-click="withdrawBTC()"  style="width:150px;">Withdraw BTC</button>
+					   </span>
+					</div>
+				</form>
+				<br/>
+				<div style="padding:10px; background-color:white; width:320px">
+					<qrcode data="{{btcAddress}}" size="300"></qrcode>
+				</div>
+				
+				<br/>
+				Ether Address: {{ethAddress}}<br/>
+				Ether Balance: {{ethBalance}} ETH (${{ethBalance * ethInUSD}} USD)<br/>
+				<span ng-show="pendingETH">Pending Ether: {{pendingETH}} ETH</span>
+				<span ng-show="latestETHHash">Hash for ETH Withdraw: {{latestETHHash}}<br/></span>
+				<form>
+					<div class="input-group">
+					   <input type="text" class="form-control" placeholder="To Address" ng-model="toETHAddress">
+					   <span class="input-group-addon"></span>
+					   <input onkeypress="return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)"  min="0" type="number" class="form-control" placeholder="Amount of ETH to Withdraw" ng-model="ethToWithdraw">
+					   <span class="input-group-btn">
+					        <button class="btn btn-gold" type="button" type="submit" ng-click="withdrawETH()"  style="width:150px;">Withdraw ETH</button>
+					   </span>
+					</div>
+				</form>
+				<br/>
+				<div style="padding:10px; background-color:white; width:320px">
+					<qrcode data="{{ethAddress}}" size="300"></qrcode>
+				</div>
+			</center>
+		</span>
+		<br/>
+		KYC/AML Information<br/>
+		KYC/AML Compliant: {{KYCAML.KYCAML}}<br/>
+		<form class="form-inline">
+			<div class="input-group">
+			   <input type="text" class="form-control" placeholder="First Name" ng-model="KYCAML.firstName">
+			   <input type="text" class="form-control" placeholder="Last Name" ng-model="KYCAML.lastName">
+			   <input type="number" class="form-control" placeholder="Phone Number" ng-model="KYCAML.phoneNumber">
+			   &nbsp;
+			   <input type="text" class="form-control" placeholder="Street Address" ng-model="KYCAML.streetAddress">
+			   <input type="text" class="form-control" placeholder="Street Address 2" ng-model="KYCAML.streetAddressTwo">
+			   <div class="input-group" style="width:100%">
+				   <input type="text" class="form-control" placeholder="City" ng-model="KYCAML.city">
+				   <span class="input-group-addon"></span>
+				   <input type="text" class="form-control" placeholder="State" ng-model="KYCAML.state">
+				   <span class="input-group-addon"></span>
+				   <input type="text" class="form-control" placeholder="Postal Code" ng-model="KYCAML.postalCode">
+			   </div>
+			   <input type="text" class="form-control" placeholder="Country" ng-model="KYCAML.country">
+			   &nbsp;<br/>
+			   Date Of Birth: <input type="date" class="form-control" ng-model="KYCAML.dob">
+			</div>
+			<button class="btn btn-gold" type="button" type="submit" ng-click="updateKYCAMLInfo()"  style="width:150px;">Update Information</button>
+		</form>
+	</div>
+</div>

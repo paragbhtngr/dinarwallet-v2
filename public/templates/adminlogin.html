@@ -1,0 +1,21 @@
+<div style="background: url('images/login_bg.jpg') no-repeat;height:100%;color:#e9d482;text-align:center;">
+	<br/>
+	<center><div id="form_div" style="width:50%;border-radius:10px;background-color:black;padding:10px;background-color: rgba(0, 0, 0, 0.5);">
+		<form>
+			<fieldset class="form-group">
+			    <label for="InputEmail">Email address</label>
+			    <input type="email" ng-model="email" name="email" class="form-control" id="InputEmail" placeholder="Enter email" style="text-transform:none">
+			</fieldset>
+			<fieldset class="form-group">
+				<label for="exampleInputPassword1">Password</label>
+			    <input type="password" ng-model="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password" style="text-transform:none">
+			</fieldset>
+				<button style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;" type="submit" value="default action" ng-click="loginUser()"/>
+			    <button name="login" ng-click="loginUser()" type="submit" class="btn btn-gold">Login</button>
+			    <br>
+			            <span style="color:#cecccc;">{{message}}</span>
+			    
+			    <br><br>
+		</form>
+	</div></center>
+</div>

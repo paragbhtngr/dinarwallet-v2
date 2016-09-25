@@ -1,0 +1,138 @@
+<html>
+	<head>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+		<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script type="text/javascript" src="./js/chart.js"></script>
+    	<script type="text/javascript" src="./js/app.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<link id="theme-style" rel="stylesheet" href="./css/styles.css">
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    	<style type="text/css">
+		
+			.header .main-nav .nav .nav-item {
+		    font-weight: normal;
+		    text-transform: uppercase;
+		    margin-right: 5px;
+		}
+		
+		
+		.navbar-brand {
+			width: 70px;
+			height: 50px;
+			
+			background-size: 50px;
+		}
+		.nav-tabs {
+			display: inline-block;
+			border-bottom: none;
+			padding-top: 15px;
+			font-weight: bold;
+		}
+		.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus, .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+			border: none;
+			border-radius: 0;
+		}
+		.nav-list {
+			border-bottom: 1px solid #eee;
+		}
+		.nav-list > li {
+			padding: 20px 15px 15px;
+			border-left: 1px solid #eee;
+		}
+		.nav-list > li:last-child {
+			border-right: 1px solid #eee;
+		}
+		.nav-list > li > a:hover {
+			text-decoration: none;
+		}
+		.nav-list > li > a > span {
+			display: block;
+			font-weight: bold;
+		
+			text-transform: uppercase;
+		}
+		.mega-dropdown {
+			position: static !important;
+			background:black;
+		}
+		.mega-dropdown-menu {
+			padding: 20px 15px 15px;
+			text-align: center;
+			width: 100%;
+			background: black;
+		    color: white;
+			border-radius:10px;
+		}
+		
+		.btn-primary {
+		    background: #000000;
+		    color: #e9d482;
+		}
+		 
+		.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+		    background: #363410;
+		}
+		 
+		.btn-primary:active, .btn-primary.active {
+		    background: #007299;
+		    box-shadow: none;
+		}
+		</style>
+
+	</head>
+  	<body ng-app="dinarApp" ng-controller="dinarCtrl" ng-init="drawGraph()" style="background-color:black;">
+  		<div ng-include src="'templates/header.html'"></div>
+  		<div id="chart_background" style="background: url('images/bg.jpg') no-repeat; text-align:right; class='btn-group'">
+	  		<div class="dropdown btn">
+			  	<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{currentDenomination}}
+			  	<span class="caret"></span></button>
+			  	<ul class="dropdown-menu pull-right">
+				    <li ng-repeat="denomination in denominations"><a ng-click="demoniationChange(denomination)" href="#">{{denomination}}</a></li>
+				</ul>
+			</div>
+			<div class="dropdown btn">
+			  	<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{currentPeriod}}
+			  	<span class="caret"></span></button>
+			  	<ul class="dropdown-menu pull-right">
+				    <li ng-repeat="period in periods"><a ng-click="periodChange(period)" href="#">{{period}}</a></li>
+				</ul>
+			</div>
+
+    		<div id="chart_div" style="width: 70%; height: 400px;">  </div>
+	
+	    	<table border="5" width="300" height="150" cellpadding="5" cellspacing="5" align="right" valign="top;" style=" margin-left:100%;">
+				  <tr>
+				  <td>Time</td>
+				  <td>Low value</td>
+				  <td>Initial value</td>
+				  <td>Final value</td>
+				  <td>Maximum value</td>
+				  </tr>
+				  <tr ng-repeat="data in tradingValues">
+				    <td>{{data[0] | date:'medium'}}</td>
+				    <td>{{data[1]}}</td>
+				    <td>{{data[2]}}</td>
+				    <td>{{data[3]}}</td>
+				    <td>{{data[4]}}</td>
+				</tr>
+				
+				
+				  
+				</table>
+
+	    	<div id="ethereum_div" class="col-md-12" style="color: #e9d482">
+	    		<div id="address" class="col-md-6">{{hash}}<br/>
+		    		<span ng-show="confirmationCount || confirmationCount==0">{{confirmationCount}} Confirmations</span>
+	    		</div>
+	    		<div id="buy/sell" class="col-md-3" style="text-align:left;">
+	    			<button class="btn btn-primary" type="button" ng-click="buy()">Buy</button>
+	    			<button class="btn btn-primary" type="button" ng-click="sell()">Sell</button>
+	    		</div>
+			</div>
+
+		</div>
+	</body>
+</html>

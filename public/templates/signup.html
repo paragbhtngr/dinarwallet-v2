@@ -1,0 +1,108 @@
+<div style="background: url('images/bg_login2.jpg') no-repeat;height:100%;color:#e9d482;-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-attachment: fixed;">
+	
+	<div class="row">
+
+                <div class="content col-md-4 col-md-offset-4">
+
+<div id="form_div" class="form_login">
+		<form>
+			<fieldset class="form-group">
+			    <label for="InputEmail">Email</label>
+			    <input type="email" ng-model="user.email" name="email" class="form-control" id="InputEmail" placeholder="Enter email">
+			</fieldset>
+
+                <fieldset class="form-group">
+                <label>Name</label>
+                    <div class="row">
+              <fieldset class="form-group col-xs-6">
+
+
+
+
+                    <input id="firstName" ng-model="user.firstName"  class="form-control" type="text" name="firstName" title="Enter first name" placeholder="First Name">
+            </fieldset>
+                <fieldset class="form-group col-xs-6">
+                    <input id="lastName"  ng-model="user.lastName" class="form-control" type="text" name="lastName" title="Enter last name" placeholder="Last name">
+
+            </fieldset>
+                    </div>
+                </fieldset>
+            <fieldset class="form-group">
+                <label for="InputDob">Date of Birth</label>
+                <div class="input-group date">
+                <input   id="InputDob" data-provide="datepicker"  ng-model="user.dob" class="form-control" data-date-format="dd/mm/yyyy" data-date-end-date="-18y" type="text" name="dob" title="Date of Birth" placeholder="Date of Birth">
+                   <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+            </fieldset>
+            <fieldset class="form-group">
+                <label for="InputAddress">Address</label>
+
+                <input id="InputAddress"  ng-model="user.streetAddress" class="form-control" type="text" name="streetAddress" title="street Address" placeholder="Street Address">
+
+            </fieldset>
+            <fieldset class="form-group">
+                <label for="InputAddress2">Address line 2</label>
+
+                <input id="InputAddress2"  ng-model="user.streetAddressTwo" class="form-control" type="text" name="streetAddressTwo" title="Street Address 2" placeholder="Street Address 2">
+
+            </fieldset>
+            <fieldset class="form-group">
+                <label>City/State/Postal Code</label>
+                <div class="row">
+                    <fieldset class="form-group col-xs-4">
+
+                <input id="InputCity"  ng-model="user.city" class="form-control" type="text" name="city" title="City" placeholder="City">
+
+            </fieldset>
+
+                    <fieldset class="form-group col-xs-4">
+                <input id="InputState"  ng-model="user.state" class="form-control" type="text" name="state" title="State" placeholder="State">
+
+            </fieldset>
+            <fieldset class="form-group col-xs-4">
+
+
+                <input id="InputPostalCode"  ng-model="user.postalCode" class="form-control" type="text" name="postalCode" title="Postal Code" placeholder="Postal Code">
+
+            </fieldset>
+                    </div>
+                </fieldset>
+
+
+            <fieldset class="form-group">
+                <label for="InputEmail">Country</label>
+
+                <select name="country" class="form-control" id="InputCountry" placeholder="Enter Country">
+                    <option ng-repeat="c in country" value="{{c.ID}}" ng-selected="user.CountryName == c.ID">{{c.Country}}</option>
+               </select>
+
+            </fieldset>
+            <fieldset class="form-group">
+                <label for="InputEmail">*Mobile</label>
+                <input type="text" ng-model="user.phoneNumber" name="phoneNumber" class="form-control" id="InputMobile" placeholder="Enter Mobile with country code">
+            </fieldset>
+			<fieldset class="form-group">
+			    <label for="InputPassword">Password</label>
+			    <input type="password" ng-model="user.password" name="password" class="form-control" id="InputPassword" placeholder="Enter password">
+			</fieldset>
+            <fieldset class="form-group">
+                <label for="InputPasswordc">Confirm Password</label>
+                <input type="password" ng-model="user.passwordc" name="cpass" class="form-control" id="InputPasswordc" placeholder="Confirm password">
+            </fieldset>
+			<button style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;" type="submit" value="default action" ng-click="registerUserPre()"/>
+			<button name="signin" ng-click="goToSignIn()" type="submit" class="btn btn-silver">Sign In</button>
+			<button name="signup" ng-click="registerUserPre()" type="submit" class="btn btn-gold">Signup</button>
+		</form><br/><br/>
+	            <span style="color:#cecccc;">{{message}}</span>
+	    
+	    <br/>
+		<center>Creating account may take 1 minute to create your SmartX Contract</center>
+	</div>
+	</div>
+	</div>
+</center>
+</div>

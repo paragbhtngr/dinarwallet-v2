@@ -1,0 +1,131 @@
+
+<div  ng-init="drawGraph()">
+<div id="chart_background" style="background: url('images/admin_bg.jpg') no-repeat;background-position: top left;background-attachment: fixed; text-align:right; width: 100%;" class='btn-group';>
+	<div id="ethereum_div" class="col-md-12" style="color: {{colorList[currentDenomination].color}}">
+		<div id="address" class="col-md-3" style="text-align:right;"><br/>
+		</div>
+		<div id="buy/sell" class="col-md-6" style="text-align:center;">
+			Action Manager Address: {{actionManagerAddress}}<br/>
+			GoldBank Address: {{goldBankAddress}}<br/>
+			GSCBank Address: {{GSCBankAddress}}<br/>
+			Bitcoin Address: {{btcAddress}}<br/>
+			Bitcoin Balance: {{btcBalance}} BTC<br/>
+			Ether Address: {{ethAddress}}<br/>
+			Ether Balance: {{ethBalance}} ETH<br/>
+		</div>
+		<div id="address" class="col-md-3" style="text-align:right;"><br/>
+		</div>
+		<div id="buy/sell" class="col-md-12" style="text-align:center;"><br/>
+		User Balances: <br/>
+			<div class="col-md-1"></div>
+			<div id="table_div" class="col-md-10">
+		        <table id="dataTable" border="5" width="100%" cellpadding="5" cellspacing="5" align="right" style=" margin-left:100%; color: {{colorList[currentDenomination].color}};">
+					<tr>
+					  <td>SmartXAddress</td>
+					  <td>DNC Balance</td>
+					  <td>GOLD_1G</td>
+					  <td>GOLD_100G</td>
+					  <td>GOLD_1KG</td>
+					  <td>SILVER100Oz</td>
+					  <td>SILVER1KG</td>
+					  </tr>
+					  <tr ng-repeat="balance in userBalances| reverse">{{data[0]}}
+					    <td>{{balance.smartXAddress}}</td>
+					    <td>{{balance.dinar}}</td>
+					    <td>{{balance.GOLD_1G}}</td>
+					    <td>{{balance.GOLD_100G}}</td>
+					    <td>{{balance.GOLD_1KG}}</td>
+					    <td>{{balance.SILVER100Oz}}</td>
+					    <td>{{balance.SILVER1KG}}</td>
+					</tr>
+		  
+				</table>
+			</div>
+			<div class="col-md-1"></div>
+		</div>
+		<div id="buy/sell" class="col-md-12" style="text-align:center;"><br/>
+		Burn Requests: <br/>
+			<div class="col-md-1"></div>
+			<div id="table_div" class="col-md-10">
+		        <table id="dataTable" border="5" width="100%" cellpadding="5" cellspacing="5" align="right" style=" margin-left:100%; color: {{colorList[currentDenomination].color}};">
+					<tr>
+					  <td>Type</td>
+					  <td>Amount</td>
+					  <td>BTC Amount</td>
+					  <td>ETH Amount</td>
+					  <td>Accept</td>
+					  <td>Reject</td>
+					  </tr>
+					  <tr ng-repeat="burnRequest in burnRequests">{{data[0]}}
+					    <td>{{burnRequest.gsc || burnRequest.type}}</td>
+					    <td>{{burnRequest.contracts.length || burnRequest.amt}}</td>
+					    <td>{{burnRequest.btcAmt || "N/A"}}<span ng-show="burnRequest.btcAmt"> BTC</span></td>
+					    <td>{{burnRequest.ethAmt || "N/A"}}<span ng-show="burnRequest.ethAmt"> ETH</span></td>
+					    <td><span style="text-decoration:underline; cursor:pointer;" ng-click="acceptBurnRequest(burnRequest._id)">Accept</span></td>
+					    <td><span style="text-decoration:underline; cursor:pointer;" ng-click="rejectBurnRequest(burnRequest._id)">Reject</span></td>
+					</tr>
+		  
+				</table>
+			</div>
+			<div class="col-md-1"></div>
+		</div>
+		<div id="address" class="col-md-9" style="text-align:right;"><br/>
+		</div>
+		<div class="col-md-3"><br/>
+			<div class="dropdown btn">
+			  	<button class="btn {{colorList[currentDenomination].button}} dropdown-toggle" type="button" data-toggle="dropdown">{{currentDenomination}}
+			  	<span class="caret"></span></button>
+			  	<ul class="dropdown-menu pull-right">
+				    <li ng-repeat="denomination in denominations"><a ng-click="demoniationChange(denomination)" href="#">{{denomination}}</a></li>
+				</ul>
+			</div>
+			<div class="dropdown btn">
+			  	<button class="btn {{colorList[currentDenomination].button}} dropdown-toggle" type="button" data-toggle="dropdown">{{currentPeriod}}
+			  	<span class="caret"></span></button>
+			  	<ul class="dropdown-menu pull-right">
+				    <li ng-repeat="period in periods"><a ng-click="periodChange(period)" href="#">{{period}}</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+   <div id="chart_div" style="height:400px;" class="col-md-6">  </div>
+   <div id="table_div" class="col-md-6">
+        <table id="dataTable" border="5" width="100%" cellpadding="5" cellspacing="5" align="right" style=" margin-left:100%; color: {{colorList[currentDenomination].color}};">
+			<tr>
+			  <td>Time</td>
+			  <td>Low value</td>
+			  <td>Initial value</td>
+			  <td>Final value</td>
+			  <td>Maximum value</td>
+			  </tr>
+			  <tr ng-repeat="data in tradingValues | reverse">{{data[0]}}>
+			    <td>{{data[0] | date:'medium'}}</td>
+			    <td>{{data[1]}}</td>
+			    <td>{{data[2]}}</td>
+			    <td>{{data[3]}}</td>
+			    <td>{{data[4]}}</td>
+			</tr>
+  
+		</table>
+   </div>
+   <div class="col-md-12" style="color: {{colorList[currentDenomination].color}}; text-align:center">
+   Logs
+   </div>
+   <div id="table_div" class="col-md-12">
+        <table id="dataTable" border="5" width="100%" cellpadding="3" cellspacing="5" align="right" style="table-layout: fixed; color: {{colorList[currentDenomination].color}};">
+			<tr>
+			  <td>SmartX Address</td>
+			  <td>Action Name</td>
+			  <td>Data</td>
+			  <td>Date</td>
+			  </tr>
+			  <tr ng-repeat="log in logs">
+			  	<td style="word-wrap: break-word">{{log[0]}}</td>
+			    <td style="word-wrap: break-word">{{log[1]}}</td>
+			    <td style="word-wrap: break-word">{{log[2]}}</td>
+			    <td style="word-wrap: break-word">{{log[3] | date:'medium'}}</td>
+			</tr>
+  
+		</table>
+   </div>
+</div>

@@ -1,0 +1,205 @@
+contract GoldBank{
+	address admin;
+	
+	event CreatedUser(address indexed user, string username, string metaData);
+	event CreatedUnverifiedUser(address indexed user);
+	event VerifiedUser(address indexed user, string username, string metaData);
+	event Minted(address indexed recipient, uint value);
+	event Transfered(address indexed from, address recipient, uint value);
+	event Burned(address indexed user, uint value);
+	event BurnRequested(address indexed user, uint value);
+	event BurnCancelled(address indexed user, uint value);
+
+
+	function GoldBank(){
+		admin = msg.sender;
+	}
+	modifier onlyadmin { if (msg.sender == admin) _ }
+
+	struct UserInfo{		
+		string username;
+		string metaData;
+		bool verified;
+		bool initialized;
+	}
+
+	mapping (address => UserInfo) public users;
+	mapping (address => uint) public qDNCBalance; // in qDinarCoin, 1 DNC = 10000 qDNC
+	mapping (address => uint) public burnRequestBalance; // in qDinarCoin, 1 DNC = 10000 qDNC
+
+	// this is called to change the admin
+	function changeAdmin(address _newAdminAddr) onlyadmin returns (bool) {
+		admin = _newAdminAddr;
+	}
+
+	//************* FUNCTIONALITY RELATING TO USERs ****************//
+	// this function creates and registers a new user to the contract
+	// return code: 
+	// - false, the address is already registered
+	// - true, successfully created
+	function createUser (address newAddr, string username, string metaData) onlyadmin returns (bool) 
+	{
+		if (ifExists(newAddr))
+			return false;
+		users[newAddr] = UserInfo(username, metaData, true, true);
+		CreatedUser(newAddr, username, metaData);
+		return true;
+	}
+
+	function getUserInfo (address userAddr) public constant returns (string, string, bool)
+	{
+		if (!ifExists(userAddr))
+			return ("false", "false", false);
+		return (users[userAddr].username, users[userAddr].metaData, users[userAddr].verified);
+	}
+
+	/** this function allows anyone to create a new user on the fly without any registration/ verification
+	* with  DinarDirham
+	* The registration/ verification can be done later.
+	* Unverified user can only receive DNC/GSC
+	*/
+	function createUnverifiedUser (address _newAddr) onlyadmin returns (bool)
+	{
+		if (ifExists(_newAddr))
+			return false;
+		
+		users[_newAddr].initialized = true;
+		users[_newAddr].verified 	= false;
+		CreatedUnverifiedUser(_newAddr);
+		return true;
+	}
+
+	// this is to verify existing users
+	function verifyUser(address userAddr, string username, string metaData) onlyadmin returns (bool)
+	{
+		if (ifExists(userAddr) && !users[userAddr].verified){
+			users[userAddr].verified = true;
+			users[userAddr].username = username;
+			users[userAddr].metaData = metaData;
+			VerifiedUser(userAddr, username, metaData);
+			return true;
+		}
+		return false;
+	}
+
+	/*
+	* Check if a user exists
+	*/
+	function ifExists (address userAddr) public returns (bool)
+	{
+		return users[userAddr].initialized;			
+	}
+
+	/*
+	* Check if a user is verified
+	*/
+	function ifVerified (address userAddr) public returns (bool)
+	{
+		return (ifExists(userAddr) && users[userAddr].verified);
+	}
+
+
+
+	//************* DNC FUNCTIONALITY ****************//	
+	/*
+	* This is called when users mint new DNC.
+	* This function is triggered by admin only
+	*/
+	function mintNewDNC (address user, uint quantity) onlyadmin returns (bool) 
+	{
+		if (!ifExists(user))
+			return false;
+		qDNCBalance[user] += quantity;
+		Minted(user, quantity);
+		return true;
+	}
+
+	// only verified users can transfer their DNC
+	function transfer (address recipient, uint quantity) returns (bool)
+	{				
+		if (!ifVerified(msg.sender))
+			return false;
+		if (qDNCBalance[msg.sender] < quantity)
+			return false;
+		if (!ifExists(recipient))
+			createUnverifiedUser(recipient);
+		qDNCBalance[msg.sender] -= quantity;
+		qDNCBalance[recipient] += quantity;
+		Transfered(msg.sender, recipient, quantity);
+		return true;
+	}
+
+	function getBalance (address user) public constant returns (uint)
+	{		
+		return qDNCBalance[user];
+	}
+
+	function sendBurnRequest (uint quantity) returns (bool)
+	{		
+		if (!ifVerified(msg.sender))
+			return false;
+		if (qDNCBalance[msg.sender] < quantity)
+			return false;
+		BurnRequested(msg.sender, quantity);
+		qDNCBalance[msg.sender] -= quantity;
+		burnRequestBalance[msg.sender] += quantity;
+	}
+
+	function burn (address user, uint quantity) onlyadmin returns (bool)
+	{		
+		if (!ifVerified(user)) 
+			return false; // this should not happen, but just to be careful
+		if (burnRequestBalance[user] < quantity)
+			return false;
+		Burned(user, quantity);
+		burnRequestBalance[msg.sender] -= quantity;
+	}
+
+	function cancelBurnRequest (uint quantity) returns (bool)
+	{
+		if (!ifVerified(msg.sender))
+			return false;
+		if (burnRequestBalance[msg.sender] < quantity)
+			return false;
+		
+		qDNCBalance[msg.sender] += quantity;
+		burnRequestBalance[msg.sender] -= quantity;
+		BurnCancelled(msg.sender, quantity);
+	}
+}
+/********* END GoldBankContract ******/
+
+
+
+
+// var goldbankContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"quantity","type":"uint256"}],"name":"burn","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"_newAddr","type":"address"}],"name":"createUnverifiedUser","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"newAddr","type":"address"},{"name":"username","type":"string"},{"name":"metaData","type":"string"}],"name":"createUser","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":true,"inputs":[{"name":"userAddr","type":"address"}],"name":"getUserInfo","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"userAddr","type":"address"}],"name":"ifVerified","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"user","type":"address"},{"name":"quantity","type":"uint256"}],"name":"mintNewDNC","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"userAddr","type":"address"},{"name":"username","type":"string"},{"name":"metaData","type":"string"}],"name":"verifyUser","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"_newAdminAddr","type":"address"}],"name":"changeAdmin","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"qDNCBalance","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"users","outputs":[{"name":"username","type":"string"},{"name":"metaData","type":"string"},{"name":"verified","type":"bool"},{"name":"initialized","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"recipient","type":"address"},{"name":"quantity","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"},{"constant":true,"inputs":[{"name":"user","type":"address"}],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"userAddr","type":"address"}],"name":"ifExists","outputs":[{"name":"","type":"bool"}],"type":"function"},{"inputs":[],"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"user","type":"address"},{"indexed":false,"name":"username","type":"string"},{"indexed":false,"name":"metaData","type":"string"}],"name":"CreatedUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"user","type":"address"}],"name":"CreatedUnverifiedUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"user","type":"address"},{"indexed":false,"name":"username","type":"string"},{"indexed":false,"name":"metaData","type":"string"}],"name":"VerifiedUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"recipient","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Minted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":false,"name":"recipient","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"recipient","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Burned","type":"event"}]);
+// var goldbank = goldbankContract.new(
+//    {
+//      from: web3.eth.accounts[0], 
+//      data: '60606040525b33600060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908302179055505b6116b18061003f6000396000f3606060405236156100c1576000357c01000000000000000000000000000000000000000000000000000000009004806342966c68146100c357806348725fd8146100f15780634ceb48fd1461011f5780636386c1c7146101db5780636d42eee2146102c757806371ced69d146102f557806378c188c51461032c5780638f283970146103e8578063966bd54e14610416578063a87430ba14610442578063a9059cbb1461058b578063f8b2cb4f146105c2578063f93edb9e146105ee576100c1565b005b6100d9600480803590602001909190505061061c565b60405180821515815260200191505060405180910390f35b6101076004808035906020019091905050610706565b60405180821515815260200191505060405180910390f35b6101c36004808035906020019091908035906020019082018035906020019191908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050909091908035906020019082018035906020019191908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505090909190505061085c565b60405180821515815260200191505060405180910390f35b6101f16004808035906020019091905050610bdd565b60405180806020018060200184151581526020018381038352868181518152602001915080519060200190808383829060006004602084601f0104600302600f01f150905090810190601f16801561025d5780820380516001836020036101000a031916815260200191505b508381038252858181518152602001915080519060200190808383829060006004602084601f0104600302600f01f150905090810190601f1680156102b65780820380516001836020036101000a031916815260200191505b509550505050505060405180910390f35b6102dd6004808035906020019091905050610e8d565b60405180821515815260200191505060405180910390f35b6103146004808035906020019091908035906020019091905050610eec565b60405180821515815260200191505060405180910390f35b6103d06004808035906020019091908035906020019082018035906020019191908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050909091908035906020019082018035906020019191908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050909091905050610ff6565b60405180821515815260200191505060405180910390f35b6103fe60048080359060200190919050506113c8565b60405180821515815260200191505060405180910390f35b61042c6004808035906020019091905050611452565b6040518082815260200191505060405180910390f35b610458600480803590602001909190505061146d565b604051808060200180602001851515815260200184151581526020018381038352878181546001816001161561010002031660029004815260200191508054600181600116156101000203166002900480156104f55780601f106104ca576101008083540402835291602001916104f5565b820191906000526020600020905b8154815290600101906020018083116104d857829003601f168201915b50508381038252868181546001816001161561010002031660029004815260200191508054600181600116156101000203166002900480156105785780601f1061054d57610100808354040283529160200191610578565b820191906000526020600020905b81548152906001019060200180831161055b57829003601f168201915b5050965050505050505060405180910390f35b6105aa60048080359060200190919080359060200190919050506114be565b60405180821515815260200191505060405180910390f35b6105d86004808035906020019091905050611625565b6040518082815260200191505060405180910390f35b6106046004808035906020019091905050611663565b60405180821515815260200191505060405180910390f35b600061062733610e8d565b15156106365760009050610701565b81600260005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000505410156106765760009050610701565b3373ffffffffffffffffffffffffffffffffffffffff167f696de425f79f4a40bc6d2122ca50507f0efbeabbff86a84871b7196ab8ea8df7836040518082815260200191505060405180910390a281600260005060003373ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505403925050819055505b919050565b6000600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614156108565761076782611663565b156107755760009050610857565b6001600160005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160016101000a81548160ff021916908302179055506000600160005060008473ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160006101000a81548160ff021916908302179055508173ffffffffffffffffffffffffffffffffffffffff167f530a5f323e127769d688ad6ca826e310dc00c55412ec6c9a436946013428021c60405180905060405180910390a260019050610857565b5b919050565b6000600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161415610bd5576108bd84611663565b156108cb5760009050610bd6565b608060405190810160405280848152602001838152602001600181526020016001815260200150600160005060008673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000506000820151816000016000509080519060200190828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061097657805160ff19168380011785556109a7565b828001600101855582156109a7579182015b828111156109a6578251826000505591602001919060010190610988565b5b5090506109d291906109b4565b808211156109ce57600081815060009055506001016109b4565b5090565b50506020820151816001016000509080519060200190828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10610a2957805160ff1916838001178555610a5a565b82800160010185558215610a5a579182015b82811115610a59578251826000505591602001919060010190610a3b565b5b509050610a859190610a67565b80821115610a815760008181506000905550600101610a67565b5090565b505060408201518160020160006101000a81548160ff0219169083021790555060608201518160020160016101000a81548160ff021916908302179055509050508373ffffffffffffffffffffffffffffffffffffffff167ffc30328c5f25cc712e3d35ad22780db665c2bb3f7a1d56dd5d195f4103c9ca0b84846040518080602001806020018381038352858181518152602001915080519060200190808383829060006004602084601f0104600302600f01f150905090810190601f168015610b645780820380516001836020036101000a031916815260200191505b508381038252848181518152602001915080519060200190808383829060006004602084601f0104600302600f01f150905090810190601f168015610bbd5780820380516001836020036101000a031916815260200191505b5094505050505060405180910390a260019050610bd6565b5b9392505050565b602060405190810160405280600081526020015060206040519081016040528060008152602001506000610c1084611663565b1515610c99576000604060405190810160405280600581526020017f66616c736500000000000000000000000000000000000000000000000000000081526020015090604060405190810160405280600581526020017f66616c736500000000000000000000000000000000000000000000000000000081526020015090925092509250610e86565b600160005060008573ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050600001600050600160005060008673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050600101600050600160005060008773ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160009054906101000a900460ff16828054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610dd85780601f10610dad57610100808354040283529160200191610dd8565b820191906000526020600020905b815481529060010190602001808311610dbb57829003601f168201915b50505050509250818054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610e745780601f10610e4957610100808354040283529160200191610e74565b820191906000526020600020905b815481529060010190602001808311610e5757829003601f168201915b50505050509150925092509250610e86565b9193909250565b6000610e9882611663565b8015610ee05750600160005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160009054906101000a900460ff165b9050610ee7565b919050565b6000600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161415610fef57610f4d83611663565b1515610f5c5760009050610ff0565b81600260005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055508273ffffffffffffffffffffffffffffffffffffffff167f30385c845b448a36257a6a1716e6ad2e1bc2cbe333cde1e69fe849ad6511adfe836040518082815260200191505060405180910390a260019050610ff0565b5b92915050565b6000600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614156113c05761105784611663565b80156110a05750600160005060008573ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160009054906101000a900460ff16155b156113b7576001600160005060008673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160006101000a81548160ff0219169083021790555082600160005060008673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000506000016000509080519060200190828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061116d57805160ff191683800117855561119e565b8280016001018555821561119e579182015b8281111561119d57825182600050559160200191906001019061117f565b5b5090506111c991906111ab565b808211156111c557600081815060009055506001016111ab565b5090565b505081600160005060008673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000506001016000509080519060200190828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061124a57805160ff191683800117855561127b565b8280016001018555821561127b579182015b8281111561127a57825182600050559160200191906001019061125c565b5b5090506112a69190611288565b808211156112a25760008181506000905550600101611288565b5090565b50508373ffffffffffffffffffffffffffffffffffffffff167f5e94ea0b09d8008f36159078964948ee03c592796297bae00c2be459e9b0cb0684846040518080602001806020018381038352858181518152602001915080519060200190808383829060006004602084601f0104600302600f01f150905090810190601f1680156113465780820380516001836020036101000a031916815260200191505b508381038252848181518152602001915080519060200190808383829060006004602084601f0104600302600f01f150905090810190601f16801561139f5780820380516001836020036101000a031916815260200191505b5094505050505060405180910390a2600190506113c1565b600090506113c1565b5b9392505050565b6000600060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141561144c5781600060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908302179055505b5b919050565b60026000506020528060005260406000206000915090505481565b6001600050602052806000526040600020600091509050806000016000509080600101600050908060020160009054906101000a900460ff16908060020160019054906101000a900460ff16905084565b60006114c933610e8d565b15156114d8576000905061161f565b81600260005060003373ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600050541015611518576000905061161f565b61152183611663565b15156115325761153083610706565b505b81600260005060003373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282825054039250508190555081600260005060008573ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828282505401925050819055503373ffffffffffffffffffffffffffffffffffffffff167f8930ac7bcb101f94c05b13845098ae74383bfb9e348e73061b730040945cbb828484604051808373ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060405180910390a26001905061161f565b92915050565b6000600260005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005054905061165e565b919050565b6000600160005060008373ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060005060020160019054906101000a900460ff1690506116ac565b91905056', 
+//      gas: 4700000
+//    }, function (e, contract){
+//     console.log(e, contract);
+//     if (typeof contract.address !== 'undefined') {
+//          console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+//     }
+//  })
+
+
+// goldbankContract.createUser.sendTransaction(eth.accounts[1], "hrishi", "some metadata",
+//  	{from: eth.accounts[0],	
+//   	gas: 3500000
+// 	})
+
+// goldbankContract.getUserInfo(eth.accounts[1])
+
+
+// goldbankContract.Mint.sendTransaction(eth.accounts[1], "Gold_10G", 100,
+//  	{from: eth.accounts[0],	
+//   	gas: 3500000
+// 	})
+
+// goldbankContract.getBalance(eth.accounts[1], "Gold_10G")
+// goldbankContract.transfer.sendTransaction(eth.accounts[0], "Gold_10G", 10, {from: eth.accounts[1],	
+//   	gas: 3500000
+// 	})

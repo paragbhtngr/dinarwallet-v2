@@ -1,0 +1,34 @@
+{
+  "name": "dinar",
+  "version": "0.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paragbhtngr/dinarwallet-v2.git"
+  },
+  "author": "Parag Bhatnagar, Hrishi Olickel, Goh Si Yuan",
+  "dependencies": {
+    "async": "^2.0.0-rc.3",
+    "bitcoinjs-lib": "^2.2.0",
+    "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
+    "crypto": "0.0.3",
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "mongodb": "^2.1.16",
+    "mongoose": "^4.4.13",
+    "mongoose-timestamp": "^0.5.0",
+    "node-uuid": "^1.4.7",
+    "nodemailer": "^2.3.2",
+    "request": "^2.72.0",
+    "socket.io": "^1.4.5",
+    "socket.io-client": "^1.4.6",
+    "web3": "^0.15.3",
+    "postmark": "*",
+    "clickatell-api": "~0.0.2"
+  }
+}
